@@ -15,12 +15,17 @@ import javax.websocket.server.PathParam;
 import javax.websocket.server.ServerEndpoint;
 
 import com.baeldung.model.Message;
+import com.opensymphony.xwork2.ActionSupport;
 
 @ServerEndpoint(value = "/chat/{username}", decoders = MessageDecoder.class, encoders = MessageEncoder.class)
-public class ChatEndpoint {
+public class ChatEndpoint extends ActionSupport {
     private Session session;
     private static final Set<ChatEndpoint> chatEndpoints = new CopyOnWriteArraySet<>();
     private static HashMap<String, String> users = new HashMap<>();
+
+    public String execute() {
+        return SUCCESS;
+    }
 
     @OnOpen
     public void onOpen(Session session, @PathParam("username") String username) throws IOException, EncodeException {
@@ -60,7 +65,7 @@ public class ChatEndpoint {
             synchronized (endpoint) {
                 try {
                     endpoint.session.getBasicRemote()
-                        .sendObject(message);
+                            .sendObject(message);
                 } catch (IOException | EncodeException e) {
                     e.printStackTrace();
                 }
